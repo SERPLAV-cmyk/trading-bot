@@ -1,5 +1,4 @@
 pyTelegramBotAPI
 flask
 pandas
-pandas-ta
 requests
