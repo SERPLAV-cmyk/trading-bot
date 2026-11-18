@@ -210,7 +210,7 @@ def choose_tf(message):
   bot.send_message(
       message.chat.id,
       f'Обрано **{message.text}**. Виберіть час експірації:',
-      parse_mode='Markdown',
+     
       reply_markup=markup,
   )
 
