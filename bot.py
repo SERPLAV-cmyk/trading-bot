@@ -127,7 +127,7 @@ def detect_patterns(df):
 def analyze_market(symbol, tf_code):
   api_interval = '5min' if tf_code == '10min_custom' else tf_code
   output_size = 100 if tf_code == '10min_custom' else 50
-      url = f'https://twelvedata.com{symbol}&interval={api_interval}&outputsize={output_size}&apikey={TD_API_KEY}'
+  url = f'https://twelvedata.com{symbol}&interval={api_interval}&outputsize={output_size}&apikey={TD_API_KEY}'
   try:
     response = requests.get(url).json()
 
