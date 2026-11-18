@@ -6,8 +6,8 @@ import requests
 import telebot
 from telebot import types
 
-TG_TOKEN = os.environ.get('TG_TOKEN', 'ВАШ_TELEGRAM_ТОКЕН')
-TD_API_KEY = os.environ.get('TD_API_KEY', 'ВАШ_TWELVEDATA_КЛЮЧ')
+TG_TOKEN = os.environ.get('TG_TOKEN', '9041060500:AAG87j-O3OePueqHLIS383DroIsLr_22Dzw')
+TD_API_KEY = os.environ.get('TD_API_KEY', 'e02aa90b0d6549b5820721c0e3e33d37')
 
 bot = telebot.TeleBot(TG_TOKEN)
 app = Flask(__name__)
@@ -126,7 +126,7 @@ def detect_patterns(df):
 def analyze_market(symbol, tf_code):
   api_interval = '5min' if tf_code == '10min_custom' else tf_code
   output_size = 100 if tf_code == '10min_custom' else 50
-  url = f'https://twelvedata.com{symbol}&interval={api_interval}&outputsize={output_size}&apikey={TD_API_KEY}'
+  url = f"https://twelvedata.com{symbol}&interval={api_interval}&outputsize={output_size}&apikey={TD_API_KEY}"
 
   try:
     response = requests.get(url).json()
