@@ -157,7 +157,7 @@ def analyze_market(symbol, tf_code):
     last_rsi = round(df['RSI'].iloc[-1], 1)
     bullish, bearish = [], []
       
-    for i in range(4):
+    for i in range(3):
            b_up, b_down = detect_patterns(df.iloc[:len(df)-i])
            bullish.extend(b_up); bearish.extend(b_down)
 
@@ -166,11 +166,13 @@ def analyze_market(symbol, tf_code):
     msg = f'📊 **Аналіз {symbol} ({tf_label})**\n'
     msg += f'📈 Поточний RSI: **{last_rsi}**\n\n'
 
-    if (bullish and last_rsi < 45) or last_rsi < 30:
+    if (bullish and last_rsi < 35) or last_rsi < 28:
+
  
       msg += '🟢 **СИГНАЛ: ВГОРУ (CALL)**\n'
       msg += f"🕯 Патерни: {', '.join(bullish)}"
-    elif (bearish and last_rsi > 55) or last_rsi > 70:
+    elif (bearish and last_rsi > 65) or last_rsi > 72:
+
 
       msg += '🔴 **СИГНАЛ: ВНИЗ (PUT)**\n'
       msg += f"🕯 Патерни: {', '.join(bearish)}"
