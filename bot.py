@@ -166,10 +166,12 @@ def analyze_market(symbol, tf_code):
     msg = f'📊 **Аналіз {symbol} ({tf_label})**\n'
     msg += f'📈 Поточний RSI: **{last_rsi}**\n\n'
 
-    if bullish or last_rsi < 45:
+    if (bullish and last_rsi < 45) or last_rsi < 30:
+ 
       msg += '🟢 **СИГНАЛ: ВГОРУ (CALL)**\n'
       msg += f"🕯 Патерни: {', '.join(bullish)}"
-    elif bearish or last_rsi > 55:
+    elif (bearish and last_rsi > 55) or last_rsi > 70:
+
       msg += '🔴 **СИГНАЛ: ВНИЗ (PUT)**\n'
       msg += f"🕯 Патерни: {', '.join(bearish)}"
     elif bullish:
