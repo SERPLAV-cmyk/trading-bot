@@ -227,7 +227,7 @@ def get_signal(message):
     return start(message)
   bot.send_message(message.chat.id, f'⏳ Аналізую {pair} ({message.text})...')
   result = analyze_market(pair, TIMEFRAMES[message.text])
-  bot.send_message(message.chat.id, result, parse_mode='Markdown')
+  bot.send_message(message.chat.id, result)
 
 
 if __name__ == '__main__':
