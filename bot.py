@@ -6,8 +6,9 @@ import requests
 import telebot
 from telebot import types
 
-TG_TOKEN = os.environ.get(ʼTG_TOKEN', '9041060500:AAFn5MTYRusYrOO0lXr7g7On_ZOn4HUJvZE')
-TD_API_KEY = os.environ.get('TD_API_KEY', 'e02aa90b0d6549b5820721c0e3e33d37')
+TG_TOKEN = os.environ.get('TG_TOKEN')
+TD_API_KEY = os.environ.get('TD_API_KEY')
+
 
 bot = telebot.TeleBot(TG_TOKEN)
 app = Flask(__name__)
