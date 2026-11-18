@@ -2,7 +2,6 @@ import os
 import threading
 from flask import Flask
 import pandas as pd
-import pandas_ta as ta
 import requests
 import telebot
 from telebot import types
@@ -59,11 +58,74 @@ TIMEFRAMES = {'5 хв': '5min', '10 хв': '10min_custom', '15 хв': '15min'}
 user_pair = {}
 
 
+def calculate_rsi(series, length=14):
+  delta = series.diff()
+  gain = delta.where(delta > 0, 0.0).ewm(alpha=1 / length, adjust=False).mean()
+  loss = (-delta.where(delta < 0, 0.0)).ewm(alpha=1 / length, adjust=False).mean()
+  rs = gain / loss
+  return 100 - (100 / (1 + rs))
+
+
+def detect_patterns(df):
+  bullish = []
+  bearish = []
+  c1 = df.iloc[-2]
+  c2 = df.iloc[-1]
+
+  body2 = abs(c2['close'] - c2['open'])
+  range2 = c2['high'] - c2['low']
+  upper_wick2 = c2['high'] - max(c2['open'], c2['close'])
+  lower_wick2 = min(c2['open'], c2['close']) - c2['low']
+
+  if range2 > 0:
+    if lower_wick2 > 2 * body2 and upper_wick2 < body2 * 0.5:
+      if c2['close'] >= c2['open']:
+        bullish.append('HAMMER')
+      else:
+        bearish.append('HANGING_MAN')
+    if upper_wick2 > 2 * body2 and lower_wick2 < body2 * 0.5:
+      if c2['close'] >= c2['open']:
+        bullish.append('INVERTED_HAMMER')
+      else:
+        bearish.append('SHOOTING_STAR')
+
+  if (
+      c1['close'] < c1['open']
+      and c2['close'] > c2['open']
+      and c2['close'] > c1['open']
+      and c2['open'] < c1['close']
+  ):
+    bullish.append('BULLISH_ENGULFING')
+  elif (
+      c1['close'] > c1['open']
+      and c2['close'] < c2['open']
+      and c2['close'] < c1['open']
+      and c2['open'] > c1['close']
+  ):
+    bearish.append('BEARISH_ENGULFING')
+
+  mid1 = (c1['open'] + c1['close']) / 2
+  if (
+      c1['close'] < c1['open']
+      and c2['close'] > c2['open']
+      and c2['open'] < c1['low']
+      and c2['close'] > mid1
+  ):
+    bullish.append('PIERCING')
+  elif (
+      c1['close'] > c1['open']
+      and c2['close'] < c2['open']
+      and c2['open'] > c1['high']
+      and c2['close'] < mid1
+  ):
+    bearish.append('DARK_CLOUD_COVER')
+
+  return bullish, bearish
+
+
 def analyze_market(symbol, tf_code):
   api_interval = '5min' if tf_code == '10min_custom' else tf_code
   output_size = 100 if tf_code == '10min_custom' else 50
-
-  # Виправлена правильна адреса API Twelve Data
   url = f'https://twelvedata.com{symbol}&interval={api_interval}&outputsize={output_size}&apikey={TD_API_KEY}'
 
   try:
@@ -90,21 +152,10 @@ def analyze_market(symbol, tf_code):
           .reset_index()
       )
 
-    df['RSI'] = ta.rsi(df['close'], length=14)
+    df['RSI'] = calculate_rsi(df['close'], length=14)
     last_rsi = round(df['RSI'].iloc[-1], 1)
 
-    patterns = df.ta.cdl_pattern(name='all')
-    last_patterns = patterns.iloc[-1]
-
-    bullish = []
-    bearish = []
-
-    for name, val in last_patterns.items():
-      clean_name = name.replace('CDL_', '')
-      if val > 0:
-        bullish.append(clean_name)
-      elif val < 0:
-        bearish.append(clean_name)
+    bullish, bearish = detect_patterns(df)
 
     tf_label = '10 хв' if tf_code == '10min_custom' else tf_code
     msg = f'📊 **Аналіз {symbol} ({tf_label})**\n'
