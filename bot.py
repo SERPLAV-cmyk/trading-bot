@@ -156,10 +156,10 @@ def analyze_market(symbol, tf_code):
     df['RSI'] = calculate_rsi(df['close'], length=14)
     last_rsi = round(df['RSI'].iloc[-1], 1)
 
-            bullish, bearish = [], []
+        bullish, bearish = [], []
         for i in range(4):
-            b_up, b_down = detect_patterns(df.iloc[:len(df)-i])
-            bullish.extend(b_up); bearish.extend(b_down)
+         b_up, b_down = detect_patterns(df.iloc[:len(df)-i])
+         bullish.extend(b_up); bearish.extend(b_down)
 
 
     tf_label = '10 хв' if tf_code == '10min_custom' else tf_code
