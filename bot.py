@@ -6,7 +6,7 @@ import requests
 import telebot
 from telebot import types
 
-TG_TOKEN = os.environ.get('TG_TOKEN','9041060500:AAHLfiNfPCnmDmLEAUEHIOkpQf65cBN33FU ')
+TG_TOKEN = os.environ.get('TG_TOKEN', '9041060500:AAHLfiNfPCnmDmLEAUEHIOkpQf65cBN33FU')
 TD_API_KEY = os.environ.get('TD_API_KEY', 'e02aa90b0d6549b5820721c0e3e33d37')
 
 bot = telebot.TeleBot(TG_TOKEN)
