@@ -151,27 +151,30 @@ def analyze_market(symbol, tf_code):
           .agg({'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last'})
           .dropna()
           .reset_index()
-      )
+    df['RSI'] = calculate_rsi(df['close'])
+    df['EMA50'] = df['close'].ewm(span=50, adjust=False).mean()
 
-    df['RSI'] = calculate_rsi(df['close'], length=14)
-    last_rsi = round(df['RSI'].iloc[-1], 1)
-    bullish, bearish = [], []
-      
-    for i in range(3):
-           b_up, b_down = detect_patterns(df.iloc[:len(df)-i])
-           bullish.extend(b_up); bearish.extend(b_down)
+    last_rsi = round(df['RSI'].iloc[-2], 1)
+    last_close = df['close'].iloc[-2]
+    last_ema = df['EMA50'].iloc[-2]
+
+
+    bullish, bearish = detect_patterns(df.iloc[:-1])
+
+
+    
 
 
     tf_label = '10 хв' if tf_code == '10min_custom' else tf_code
     msg = f'📊 **Аналіз {symbol} ({tf_label})**\n'
     msg += f'📈 Поточний RSI: **{last_rsi}**\n\n'
 
-    if (bullish and last_rsi < 35) or last_rsi < 28:
+    if bullish and last_rsi < 35 and last_close > last_ema:
 
  
       msg += '🟢 **СИГНАЛ: ВГОРУ (CALL)**\n'
       msg += f"🕯 Патерни: {', '.join(bullish)}"
-    elif (bearish and last_rsi > 65) or last_rsi > 72:
+    elif bearish and last_rsi > 65 and last_close < last_ema:
 
 
       msg += '🔴 **СИГНАЛ: ВНИЗ (PUT)**\n'
