@@ -151,6 +151,7 @@ def analyze_market(symbol, tf_code):
           .agg({'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last'})
           .dropna()
           .reset_index()
+      )
     df['RSI'] = calculate_rsi(df['close'])
     df['EMA50'] = df['close'].ewm(span=50, adjust=False).mean()
 
